@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow: visible;
+  }
+  body {
+    /* Oliver Bonas typeface is Futura Md BT. It's used here first so any
+       page that already loads the licensed webfont picks it up automatically;
+       Jost (loaded above) is the closest freely-hostable geometric-sans
+       substitute and carries the look everywhere else. */
+    font-family: 'Futura Md BT', 'Futura', 'Century Gothic', 'Jost', system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+    color: #333333;
+    white-space: nowrap;
+  }
+  .ai {
+    /* Oliver Bonas green through to a warm gold twinkle, so the AI accent
+       still reads as "AI" but sits in the brand palette rather than a
+       generic purple/pink. */
+    background: linear-gradient(100deg, #046A39 0%, #00A44C 55%, #C9A227 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .star {
+    position: relative;
+    display: inline-block;
+  }
+  .star::before,
+  .star::after {
+    content: '✦';
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .star::before {
+    color: #C9A227;
+    font-size: 0.4em;
+    top: -0.3em;
+    right: -0.5em;
+    animation: spk 3s ease-in-out 0.3s infinite;
+    animation-play-state: paused;
+  }
+  .star::after {
+    color: #00A44C;
+    font-size: 0.28em;
+    bottom: -0.1em;
+    left: -0.3em;
+    animation: spk 3s ease-in-out 1.5s infinite;
+    animation-play-state: paused;
+  }
+  @keyframes spk {
+    0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+    50%       { opacity: 1; transform: scale(1)   rotate(45deg); }
+  }
+  .cursor {
+    display: inline-block;
+    color: #333333;
+    margin-left: 1px;
+    opacity: 1;
+    animation: blink 0.82s ease-in-out infinite alternate;
+    animation-play-state: paused;
+  }
+  @keyframes blink {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  body.reading .star::before,
+  body.reading .star::after,
+  body.reading .cursor {
+    animation-play-state: running;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cursor { animation: none; }
+    .star::before, .star::after { display: none; }
+  }
+</style>
+</head>
+<body>
+<span>Ask&nbsp;<span class="star"><span class="ai">✦</span></span><span class="ai"> Companion</span>:&nbsp;</span><span id="t" aria-live="polite"></span><span class="cursor" id="c" aria-hidden="true">|</span>
+<script>
+(function(){
+  var Q = [
+    "When is pay day?",
+    "How do I redeem a gift card?",
+    "How should I use AI in my role?"
+  ];
+  var t = document.getElementById('t');
+  var c = document.getElementById('c');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    t.textContent = Q[0]; c.style.display = 'none'; return;
+  }
+  var qi = 0, ci = 0, del = false, paused = false, timer = null;
+  var body = document.body;
+
+  function tick() {
+    if (paused) return;
+    var q = Q[qi];
+    if (!del) {
+      t.textContent = q.slice(0, ++ci);
+      if (ci === q.length) {
+        del = true;
+        body.classList.add('reading');
+        timer = setTimeout(tick, 3500);
+        return;
+      }
+      body.classList.remove('reading');
+      timer = setTimeout(tick, 80);
+    } else {
+      body.classList.remove('reading');
+      t.textContent = q.slice(0, --ci);
+      if (ci === 0) { del = false; qi = (qi + 1) % Q.length; timer = setTimeout(tick, 500); return; }
+      timer = setTimeout(tick, 42);
+    }
+  }
+
+  function pause() { paused = true; clearTimeout(timer); }
+  function resume() { paused = false; tick(); }
+
+  t.parentNode.addEventListener('mouseenter', pause);
+  t.parentNode.addEventListener('mouseleave', resume);
+  document.addEventListener('visibilitychange', function() {
+    document.hidden ? pause() : resume();
+  });
+
+  timer = setTimeout(tick, 600);
+}());
+</script>
+</body>
+</html>
