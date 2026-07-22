@@ -36,35 +36,7 @@
     100% { background-position: -100% 0; }
   }
   .star {
-    position: relative;
     display: inline-block;
-  }
-  .star::before,
-  .star::after {
-    content: '✦';
-    position: absolute;
-    pointer-events: none;
-    opacity: 0;
-  }
-  .star::before {
-    color: #C9CAC9;
-    font-size: 0.4em;
-    top: -0.3em;
-    right: -0.5em;
-    animation: spk 3s ease-in-out 0.3s infinite;
-    animation-play-state: paused;
-  }
-  .star::after {
-    color: #6E6F6E;
-    font-size: 0.28em;
-    bottom: -0.1em;
-    left: -0.3em;
-    animation: spk 3s ease-in-out 1.5s infinite;
-    animation-play-state: paused;
-  }
-  @keyframes spk {
-    0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
-    50%       { opacity: 1; transform: scale(1)   rotate(45deg); }
   }
   .cursor {
     display: inline-block;
@@ -78,14 +50,11 @@
     0%   { opacity: 1; }
     100% { opacity: 0; }
   }
-  body.reading .star::before,
-  body.reading .star::after,
   body.reading .cursor {
     animation-play-state: running;
   }
   @media (prefers-reduced-motion: reduce) {
     .cursor { animation: none; }
-    .star::before, .star::after { display: none; }
     .ai { animation: none; background-position: 0 0; }
   }
 </style>
